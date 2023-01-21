@@ -4,11 +4,11 @@ import { mockUser } from '../mockUser';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
 
 function HomeScreen(){
     return(
-
             <View style={styles.homePageHeader}>
                 <View style={styles.nameContainer}>
                     <Text style={styles.name}>Hi, {mockUser.firstName}</Text>
@@ -22,7 +22,7 @@ function HomeScreen(){
                         renderItem={({item}) =>
                         <View style={styles.transactionHistoryRow}>
                             <Text >{item.key}</Text>
-                            <Text >{item.value}</Text>
+                            <Text >{item.value} zł</Text>
                         </View>
                          }
                     ></FlatList>
@@ -47,8 +47,33 @@ export default function showHomePage () {
     return (
         <NavigationContainer>
             <Tab.Navigator>
-                <Tab.Screen name='Home' component={HomeScreen} />
-                <Tab.Screen name='Settings' component={ExampleSettings} />
+                <Tab.Screen
+                    name='Home'
+                    component={HomeScreen}
+                     options={{
+                           tabBarLabel: 'Home',
+                           tabBarIcon: ({ color, size }) => (
+                             <MaterialCommunityIcons name="home" color={color} size={size} />
+                           ),
+                         }}/>
+                 <Tab.Screen
+                     name='Wire transfer'
+                     component={ExampleSettings}
+                     options={{
+                         tabBarLabel: 'Wire transfer',
+                         tabBarIcon: ({ color, size }) => (
+                           <MaterialCommunityIcons name="bank-transfer" color={color} size={size} />
+                         ),
+                       }}/>
+                <Tab.Screen
+                    name='Settings'
+                    component={ExampleSettings}
+                    options={{
+                        tabBarLabel: 'Settings',
+                        tabBarIcon: ({ color, size }) => (
+                          <MaterialCommunityIcons name="cog" color={color} size={size} />
+                        ),
+                      }}/>
             </Tab.Navigator>
         </NavigationContainer>
       );
@@ -75,7 +100,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
-
     transactionHistoryRow: {
        flex:2,
        flexDirection: 'row',
