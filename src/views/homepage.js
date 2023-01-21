@@ -6,23 +6,31 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+const endpointLink = 'exp://192.168.0.6:19000';
 
 function HomeScreen(){
+    let tmpOverall = 0.00;
+    mockUser.transactionHistory.forEach(item => {
+        tmpOverall += parseFloat(item.value);
+    });
+    mockUser.overall=tmpOverall;
     return(
             <View style={styles.homePageHeader}>
                 <View style={styles.nameContainer}>
                     <Text style={styles.name}>Hi, {mockUser.firstName}</Text>
                 </View>
                 <View style={styles.overallContainer}>
-                    <Text style={styles.overall}>{mockUser.overall} zł</Text>
+                    <Text style={styles.overall}>{mockUser.overall.toFixed(2)} zł</Text>
                 </View>
                 <View>
+                    <Text style={{ marginLeft : '5%',marginBottom: '3%', fontSize: 20 }}>Your last transactions</Text>
                     <FlatList
                         data={ mockUser.transactionHistory }
                         renderItem={({item}) =>
                         <View style={styles.transactionHistoryRow}>
                             <Text >{item.key}</Text>
-                            <Text >{item.value} zł</Text>
+                            <Text style={ (item.type == 'in') ? styles.transactionIn : styles.transactionOut }>
+                                {item.value} zł</Text>
                         </View>
                          }
                     ></FlatList>
@@ -32,8 +40,8 @@ function HomeScreen(){
 
         );
 }
-
-function ExampleSettings(){ // here import setting view instead of example text
+//TODO: setting view instead of example text
+function ExampleSettings(){
     return (
         <View>
           <Text>Settings</Text>
@@ -107,5 +115,15 @@ const styles = StyleSheet.create({
        padding: '2%',
        paddingLeft: '5%',
        paddingRight: '5%',
+       borderBottomColor: 'lightgray',
+       borderBottomWidth: 2,
+       marginLeft: '5%',
+       marginRight: '5%',
+    },
+    transactionOut: {
+        color: 'red'
+    },
+    transactionIn: {
+        color:'green'
     }
 });
