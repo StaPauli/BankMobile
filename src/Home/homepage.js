@@ -1,6 +1,7 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { NativeBaseProvider, Box } from 'native-base';
 import { mockUser } from '../mockUser';
+import showWireTransfer from '../WireTransfer/wireTransfer';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -36,8 +37,6 @@ function HomeScreen(){
                     ></FlatList>
                 </View>
             </View>
-
-
         );
 }
 //TODO: setting view instead of example text
@@ -49,6 +48,12 @@ function ExampleSettings(){
     );
 }
 
+function WireTransferView(){
+    return (
+        showWireTransfer()
+    );
+}
+
 const Tab = createBottomTabNavigator();
 
 export default function showHomePage () {
@@ -57,7 +62,7 @@ export default function showHomePage () {
             <Tab.Navigator>
                 <Tab.Screen
                     name='Home'
-                    component={HomeScreen}
+                    component={ HomeScreen }
                      options={{
                            tabBarLabel: 'Home',
                            tabBarIcon: ({ color, size }) => (
@@ -66,7 +71,7 @@ export default function showHomePage () {
                          }}/>
                  <Tab.Screen
                      name='Wire transfer'
-                     component={ExampleSettings}
+                     component={ WireTransferView }
                      options={{
                          tabBarLabel: 'Wire transfer',
                          tabBarIcon: ({ color, size }) => (
