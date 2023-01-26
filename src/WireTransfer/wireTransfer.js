@@ -46,7 +46,7 @@ export default function showWireTransfer () {
             <Button
                 style={{borderRadius: 20, width: '50%'}}
                 title='Accept'
-                onPress={() => { //here HTTP POST to DB
+                onPress={() => { //here HTTP POST to DB, HTTP PUT to User overall
                     Alert.alert('Wire transfer accepted (tmp alert)')
                 }}
                 color='#7bbdab'

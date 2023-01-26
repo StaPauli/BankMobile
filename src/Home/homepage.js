@@ -1,50 +1,77 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View,Pressable,Alert } from 'react-native';
 import { NativeBaseProvider, Box } from 'native-base';
 import { mockUser } from '../mockUser';
 import showWireTransfer from '../WireTransfer/wireTransfer';
+import showSettings from '../Settings/settings';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const endpointLink = 'exp://192.168.0.6:19000';
+
+const Tab = createBottomTabNavigator();
 
 function HomeScreen(){
     let tmpOverall = 0.00;
+
     mockUser.transactionHistory.forEach(item => {
         tmpOverall += parseFloat(item.value);
     });
-    mockUser.overall=tmpOverall;
+    const calculatedOverall = tmpOverall;
+    mockUser.overall=calculatedOverall;
+
+    let transactionHistoryList=[];
+    if(mockUser.transactionHistory.length >= 5){
+        transactionHistoryList=mockUser.transactionHistory.reverse().slice(0, 5);
+    }
+    else{
+        transactionHistoryList=mockUser.transactionHistory.reverse();
+    }
+
+    const renderItem = ({item}) => (
+        <View style={styles.transactionHistoryRow}>
+            <Text >{item.key}</Text>
+            <Text style={ (item.type == 'in') ? styles.transactionIn : styles.transactionOut }>
+                {item.value} zł</Text>
+        </View>
+     );
+
     return(
             <View style={styles.homePageHeader}>
                 <View style={styles.nameContainer}>
                     <Text style={styles.name}>Hi, {mockUser.firstName}</Text>
                 </View>
                 <View style={styles.overallContainer}>
-                    <Text style={styles.overall}>{mockUser.overall.toFixed(2)} zł</Text>
+                    <Text style={styles.overall}>{calculatedOverall.toFixed(2)} zł</Text>
                 </View>
                 <View>
-                    <Text style={{ marginLeft : '5%',marginBottom: '3%', fontSize: 20 }}>Your last transactions</Text>
+                    <View style={styles.transactionHeader}>
+                        <Text style={{fontSize: 20}}>Your last transactions</Text>
+                        <Pressable
+                            onPress={() => {
+                              Alert.alert('transaction history soon!');
+                            }}
+                            style={({pressed}) => [
+                              {
+                                backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'white',
+                              },
+                              styles.wrapperCustom,
+                            ]}>
+
+                        <Text>History</Text></Pressable>
+                    </View>
                     <FlatList
-                        data={ mockUser.transactionHistory }
-                        renderItem={({item}) =>
-                        <View style={styles.transactionHistoryRow}>
-                            <Text >{item.key}</Text>
-                            <Text style={ (item.type == 'in') ? styles.transactionIn : styles.transactionOut }>
-                                {item.value} zł</Text>
-                        </View>
-                         }
+                        data={ transactionHistoryList }
+                        renderItem={renderItem}
                     ></FlatList>
                 </View>
             </View>
         );
 }
-//TODO: setting view instead of example text
-function ExampleSettings(){
+
+function SettingsView(){
     return (
-        <View>
-          <Text>Settings</Text>
-        </View>
+        showSettings()
     );
 }
 
@@ -53,8 +80,6 @@ function WireTransferView(){
         showWireTransfer()
     );
 }
-
-const Tab = createBottomTabNavigator();
 
 export default function showHomePage () {
     return (
@@ -80,7 +105,7 @@ export default function showHomePage () {
                        }}/>
                 <Tab.Screen
                     name='Settings'
-                    component={ExampleSettings}
+                    component={SettingsView}
                     options={{
                         tabBarLabel: 'Settings',
                         tabBarIcon: ({ color, size }) => (
@@ -113,6 +138,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
+    transactionHeader: {
+        flexDirection:'row',
+        justifyContent: 'space-between',
+        marginHorizontal : '5%',
+        marginBottom: '3%',
+    },
     transactionHistoryRow: {
        flex:2,
        flexDirection: 'row',
@@ -130,5 +161,10 @@ const styles = StyleSheet.create({
     },
     transactionIn: {
         color:'green'
-    }
+    },
+      wrapperCustom: {
+        borderRadius: 8,
+        padding: 6,
+        marginRight:'5%'
+      },
 });
