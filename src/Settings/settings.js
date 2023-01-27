@@ -1,28 +1,27 @@
-import { Image, StyleSheet, Text, View, Pressable,Alert } from 'react-native';
+import { Image, StyleSheet, Text, View, TouchableOpacity ,Alert } from 'react-native';
+import { NativeBaseProvider,Switch, useColorMode, useColorModeValue  } from 'native-base'
 import { mockUser } from '../mockUser';
 
-
+//TODO: switch to dark mode with native base
 export default function showSettings(){
     return (
-        <View >
+        <NativeBaseProvider>
             <View>
-                <Pressable
+                <TouchableOpacity
                     onPress={() => {
                       Alert.alert('photo change soon!');
                     }}
-                    style={({pressed}) => [
-                      {
-                        backgroundColor: pressed ? 'transparent' : 'transparent',
-                      },
-                      styles.avatarContainer,
-                    ]}>
-                <Image source={mockUser.image.source} style={styles.avatar}/>
-                </Pressable>
+                    style={styles.avatarContainer}>
+                    <Image source={mockUser.image.source} style={styles.avatar}/>
+                </TouchableOpacity >
             </View>
             <View>
                 <Text style={styles.username}>{mockUser.firstName} {mockUser.lastName}</Text>
             </View>
-        </View>
+            <View style={styles.switchRow}>
+                <Text style={{fontSize:16}}>Dark mode (TODO - switch here) </Text>
+            </View>
+        </NativeBaseProvider>
     );
 }
 
@@ -44,5 +43,10 @@ const styles = StyleSheet.create({
         fontSize: 20,
         padding: '5%'
     },
+    switchRow: {
+        margin: '5%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    }
 })
 
