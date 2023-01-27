@@ -1,18 +1,27 @@
 import { FlatList, StyleSheet, Text, View,Pressable,Alert } from 'react-native';
-import { NativeBaseProvider, Box } from 'native-base';
+import { NativeBaseProvider, Box, StatusBar, useColorMode } from 'native-base';
 import { mockUser } from '../mockUser';
 import showWireTransfer from '../WireTransfer/wireTransfer';
 import showSettings from '../Settings/settings';
+import showTransactionHistory from '../TransactionHistory/transactionHistory';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { customTheme } from '../../src/Theme';
 
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
-function HomeScreen(){
+
+function History(){
+    return(
+        showTransactionHistory()
+    );
+}
+function HomeScreen( {navigation} ){
     let tmpOverall = 0.00;
 
     mockUser.transactionHistory.forEach(item => {
@@ -57,7 +66,7 @@ function HomeScreen(){
                         <Text style={{fontSize: 20}}>Your last transactions</Text>
                         <Pressable
                             onPress={() => {
-                              Alert.alert('transaction history soon!');
+                              navigation.navigate('History', {screen : 'History'})
                             }}
                             style={({pressed}) => [
                               {
@@ -89,39 +98,60 @@ function WireTransferView(){
     );
 }
 
+function Home() {
+  return (
+    <Tab.Navigator>
+        <Tab.Screen
+            name='Home'
+            component={ HomeScreen }
+             options={{
+                   tabBarLabel: 'Home',
+                   tabBarIcon: ({ color, size }) => (
+                     <MaterialCommunityIcons name="home" color={color} size={size} />
+                   ),
+                 }}/>
+         <Tab.Screen
+             name='Wire transfer'
+             component={ WireTransferView }
+             options={{
+                 tabBarLabel: 'Wire transfer',
+                 tabBarIcon: ({ color, size }) => (
+                   <MaterialCommunityIcons name="bank-transfer" color={color} size={size} />
+                 ),
+               }}/>
+        <Tab.Screen
+            name='Settings'
+            component={SettingsView}
+            options={{
+                tabBarLabel: 'Settings',
+                tabBarIcon: ({ color, size }) => (
+                  <MaterialCommunityIcons name="cog" color={color} size={size} />
+                ),
+              }}/>
+    </Tab.Navigator>
+  );
+}
+
 export default function showHomePage () {
+    const {colorMode} = useColorMode();
     return (
+    <NativeBaseProvider theme={customTheme}>
         <NavigationContainer>
-            <Tab.Navigator>
-                <Tab.Screen
-                    name='Home'
-                    component={ HomeScreen }
-                     options={{
-                           tabBarLabel: 'Home',
-                           tabBarIcon: ({ color, size }) => (
-                             <MaterialCommunityIcons name="home" color={color} size={size} />
-                           ),
-                         }}/>
-                 <Tab.Screen
-                     name='Wire transfer'
-                     component={ WireTransferView }
-                     options={{
-                         tabBarLabel: 'Wire transfer',
-                         tabBarIcon: ({ color, size }) => (
-                           <MaterialCommunityIcons name="bank-transfer" color={color} size={size} />
-                         ),
-                       }}/>
-                <Tab.Screen
-                    name='Settings'
-                    component={SettingsView}
-                    options={{
-                        tabBarLabel: 'Settings',
-                        tabBarIcon: ({ color, size }) => (
-                          <MaterialCommunityIcons name="cog" color={color} size={size} />
-                        ),
-                      }}/>
-            </Tab.Navigator>
+            <Stack.Navigator>
+                <Stack.Screen
+                    name='Homepage'
+                    component={ Home }
+                    options={{ headerShown: false }}
+                     />
+                <Stack.Screen name="History" component={History} />
+            </Stack.Navigator>
         </NavigationContainer>
+        <StatusBar
+            barStyle = {colorMode === 'dark'?'light-content':'dark-content'}
+            translucent
+            backgroundColor='transparent'
+        />
+    </NativeBaseProvider>
       );
 }
 
