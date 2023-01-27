@@ -7,6 +7,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 
 const Tab = createBottomTabNavigator();
@@ -42,7 +43,14 @@ function HomeScreen(){
                     <Text style={styles.name}>Hi, {mockUser.firstName}</Text>
                 </View>
                 <View style={styles.overallContainer}>
-                    <Text style={styles.overall}>{calculatedOverall.toFixed(2)} zł</Text>
+                        <LinearGradient
+                          colors={['#f5d817', '#03ba87', '#00d4ff' ]}
+                          style={styles.linearGradient}
+                        >
+                        <View style={styles.insideCircle}>
+                            <Text style={styles.overall}>{calculatedOverall.toFixed(2)} zł</Text>
+                        </View>
+                    </LinearGradient>
                 </View>
                 <View>
                     <View style={styles.transactionHeader}>
@@ -131,13 +139,36 @@ const styles = StyleSheet.create({
         padding: '2%'
     },
     overall : {
-        fontSize: 40,
-        padding: '10%'
+        fontSize: 35,
+        padding: '10%',
+
     },
     overallContainer: {
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        borderRadius:200,
+
     },
+    insideCircle: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        backgroundColor: 'white',
+        borderRadius: 200,
+        height: 220,
+        width: 220,
+
+    },
+    linearGradient: {
+
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        borderRadius: 200,
+        height: 250,
+        width: 250,
+        },
+
     transactionHeader: {
         flexDirection:'row',
         justifyContent: 'space-between',
