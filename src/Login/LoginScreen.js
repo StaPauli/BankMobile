@@ -1,14 +1,16 @@
 import React, {useEffect, useState} from "react";
-import { StyleSheet, View} from "react-native";
+import {StyleSheet, TouchableOpacity, View} from "react-native";
 import { Button, Input, Image } from "react-native-elements";
 import { StatusBar } from "expo-status-bar";
 import { auth } from '../firebase';
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const LoginScreen = ({ navigation }) => {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-
+    const [show, setShow] = useState(false)
+    const [visible, setVisible] = useState(true)
     useEffect(() => {
        const unsubscribe = auth.onAuthStateChanged((authUser) => {
             if(authUser) {
@@ -40,12 +42,25 @@ const LoginScreen = ({ navigation }) => {
                 />
                 <Input
                     placeholder="Password"
-                    secureTextEntry
+                    secureTextEntry={visible}
                     type="password"
                     value={password}
                     onChangeText={text => setPassword(text)}
                     onSubmitEditing={signIn}
                 />
+                <TouchableOpacity style={styles.btnEye} onPress={
+                    () => {
+                        setVisible(!visible)
+                        setShow(!show)
+                    }
+                }>
+                    <MaterialCommunityIcons
+                    name={show === false ? 'eye-outline' : 'eye-off-outline'}
+                    size={26}
+                    color={"black"}
+
+                    />
+                </TouchableOpacity>
             </View>
 
             <Button containerStyle={styles.button1} onPress={signIn} title="Login" />
@@ -78,6 +93,11 @@ const styles = StyleSheet.create({
         borderColor: '#2C6BED',
         width: 200,
     },
+    btnEye: {
+        position: "absolute",
+        right: 5,
+        top: 74,
+    }
 
 
 })

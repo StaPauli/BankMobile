@@ -1,24 +1,22 @@
-import React, {useLayoutEffect, useState} from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useState } from "react";
+import {StyleSheet, TouchableOpacity, View} from "react-native";
 import { KeyboardAvoidingView } from "react-native";
 import { Button, Input, Text } from "react-native-elements";
 import { StatusBar } from "expo-status-bar";
 import { auth } from '../firebase';
+import {MaterialCommunityIcons} from "@expo/vector-icons";
 
 
-const SingUpScreen = ({ navigation }) => {
+const SingUpScreen = () => {
 
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confrimpassword, setConfirmPassword] = useState("");
-
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerBackTitle: "ABC",
-        });
-    }, [navigation]);
-
+    const [show, setShow] = useState(false)
+    const [visible, setVisible] = useState(true)
+    const [show2, setShow2] = useState(false)
+    const [visible2, setVisible2] = useState(true)
     const signup = () => {
         auth
             .createUserWithEmailAndPassword(email, password)
@@ -55,17 +53,53 @@ const SingUpScreen = ({ navigation }) => {
                 <Input
                     placeholder="Password"
                     type="password"
-                    secureTextEntry
+                    secureTextEntry={visible}
                     value={password}
                     onChangeText={(text) => setPassword(text)}
                 />
                 <Input
                     placeholder="Confirm Password"
                     type="password"
-                    secureTextEntry
+                    secureTextEntry={visible2}
                     value={confrimpassword}
                     onChangeText={(text) => setConfirmPassword(text)}
                 />
+
+                <TouchableOpacity style={styles.btnEye} onPress={
+                    () => {
+                        setVisible(!visible)
+                        setShow(!show)
+                    }
+                }>
+
+
+                    <MaterialCommunityIcons
+                        name={show === false ? 'eye-outline' : 'eye-off-outline'}
+                        size={26}
+                        color={"black"}
+
+                    />
+
+                </TouchableOpacity>
+
+
+                <TouchableOpacity style={styles.btnEye2} onPress={
+                    () => {
+                        setVisible2(!visible2)
+                        setShow2(!show2)
+                    }
+                }>
+
+
+                    <MaterialCommunityIcons
+                        name={show2 === false ? 'eye-outline' : 'eye-off-outline'}
+                        size={26}
+                        color={"black"}
+
+                    />
+
+                </TouchableOpacity>
+
             </View>
 
 
@@ -94,6 +128,17 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         width: 300,
-    }
+    },
+    btnEye: {
+        position: "absolute",
+        right: 5,
+        top: 140,
+    },
+    btnEye2: {
+        position: "absolute",
+        right: 5,
+        top: 210,
+    },
+
 
 })
