@@ -9,12 +9,26 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { customTheme } from '../../src/Theme';
 
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
+
+const OverallGradient = ({calculatedOverall}) => {
+    return (
+        <View style={styles.overallContainer}>
+                <LinearGradient
+                  colors={['#f5d817', '#03ba87', '#00d4ff' ]}
+                  style={styles.linearGradient}
+                >
+                <View style={styles.insideCircle}>
+                    <Text style={styles.overall}>{calculatedOverall.toFixed(2)} zł</Text>
+                </View>
+            </LinearGradient>
+        </View>
+    );
+}
 
 function History(){
     return(
@@ -31,7 +45,7 @@ function HomeScreen( {navigation} ){
     mockUser.overall=calculatedOverall;
 
     let transactionHistoryList=[];
-    if(mockUser.transactionHistory.length >= 5){
+    if(mockUser.transactionHistory.length > 5){
         transactionHistoryList=mockUser.transactionHistory.reverse().slice(0, 5);
     }
     else{
@@ -51,16 +65,7 @@ function HomeScreen( {navigation} ){
                 <View style={styles.nameContainer}>
                     <Text style={styles.name}>Hi, {mockUser.firstName}</Text>
                 </View>
-                <View style={styles.overallContainer}>
-                        <LinearGradient
-                          colors={['#f5d817', '#03ba87', '#00d4ff' ]}
-                          style={styles.linearGradient}
-                        >
-                        <View style={styles.insideCircle}>
-                            <Text style={styles.overall}>{calculatedOverall.toFixed(2)} zł</Text>
-                        </View>
-                    </LinearGradient>
-                </View>
+                <OverallGradient calculatedOverall={calculatedOverall}/>
                 <View>
                     <View style={styles.transactionHeader}>
                         <Text style={{fontSize: 20}}>Your last transactions</Text>
@@ -77,10 +82,12 @@ function HomeScreen( {navigation} ){
 
                         <Text>History</Text></Pressable>
                     </View>
-                    <FlatList
-                        data={ transactionHistoryList }
-                        renderItem={renderItem}
-                    ></FlatList>
+                    <View style={{marginBottom: '5%'}}>
+                        <FlatList
+                            data={ transactionHistoryList }
+                            renderItem={renderItem}
+                        ></FlatList>
+                    </View>
                 </View>
             </View>
         );
@@ -123,35 +130,31 @@ function Home() {
             name='Settings'
             component={SettingsView}
             options={{
+                unmountOnBlur: true,
                 tabBarLabel: 'Settings',
                 tabBarIcon: ({ color, size }) => (
                   <MaterialCommunityIcons name="cog" color={color} size={size} />
                 ),
+
               }}/>
     </Tab.Navigator>
   );
 }
 
 export default function showHomePage () {
-    const {colorMode} = useColorMode();
     return (
-    <NativeBaseProvider theme={customTheme}>
-        <NavigationContainer>
-            <Stack.Navigator>
-                <Stack.Screen
-                    name='Homepage'
-                    component={ Home }
-                    options={{ headerShown: false }}
-                     />
-                <Stack.Screen name="History" component={History} />
-            </Stack.Navigator>
-        </NavigationContainer>
-        <StatusBar
-            barStyle = {colorMode === 'dark'?'light-content':'dark-content'}
-            translucent
-            backgroundColor='transparent'
-        />
-    </NativeBaseProvider>
+        <NativeBaseProvider>
+            <NavigationContainer>
+                <Stack.Navigator>
+                    <Stack.Screen
+                        name='Homepage'
+                        component={ Home }
+                        options={{ headerShown: false }}
+                         />
+                    <Stack.Screen name="History" component={History} />
+                </Stack.Navigator>
+            </NavigationContainer>
+        </NativeBaseProvider>
       );
 }
 
@@ -163,10 +166,11 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     name: {
-        fontSize: 30
+        fontSize: 30,
+        margin: '5%'
     },
     nameContainer: {
-        padding: '2%'
+        padding: '0%'
     },
     overall : {
         fontSize: 35,
