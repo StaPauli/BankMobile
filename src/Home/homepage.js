@@ -10,10 +10,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { LinearGradient } from 'expo-linear-gradient';
 
-
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
-
 
 const OverallGradient = ({calculatedOverall}) => {
     return (
@@ -144,7 +142,7 @@ function Home() {
 export default function showHomePage () {
     return (
         <NativeBaseProvider>
-            <NavigationContainer>
+            <NavigationContainer independent={true}>
                 <Stack.Navigator>
                     <Stack.Screen
                         name='Homepage'
