@@ -1,26 +1,92 @@
-import { Image, StyleSheet, Text, View, TouchableOpacity ,Alert } from 'react-native';
-import { NativeBaseProvider,Switch, useColorMode, useColorModeValue  } from 'native-base'
+import 'react-native-gesture-handler';
+import React from 'react';
+import { Image, StyleSheet, Text, View, TouchableOpacity ,Alert,LogBox } from 'react-native';
+import { NativeBaseProvider,Switch, useColorMode, useColorModeValue  } from 'native-base';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { mockUser } from '../mockUser';
+import CustomCamera from '../Camera/camera';
 
+LogBox.ignoreAllLogs(true);
 //TODO: switch to dark mode with native base
-export default function showSettings(){
+//TODO: user image change
+const Stack = createNativeStackNavigator();
+
+const Avatar = ({navigation}) => {
+    const createAlert = () =>{
+        Alert.alert('Edit image', 'Change your profile picture', [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {text: 'Pick from gallery', onPress: () =>  navigation.navigate('Gallery') },
+          {text: 'Take a picture', onPress: () =>  navigation.navigate('Camera') }
+        ])
+    };
     return (
-        <NativeBaseProvider>
-            <View>
-                <TouchableOpacity
-                    onPress={() => {
-                      Alert.alert('photo change soon!');
-                    }}
-                    style={styles.avatarContainer}>
+        <View>
+            <TouchableOpacity
+                onPress= {createAlert}
+                style={styles.avatarContainer}>
+                <View>
                     <Image source={mockUser.image.source} style={styles.avatar}/>
-                </TouchableOpacity >
-            </View>
+                </View>
+            </TouchableOpacity >
+        </View>
+    );
+}
+
+const Username = () => {
+    return (
+        <View>
+            <Text style={styles.username}>{mockUser.firstName} {mockUser.lastName}</Text>
+        </View>
+    );
+}
+
+function TakingPictures(){
+    return(
+            <CustomCamera userImage={mockUser.image}/>
+    );
+}
+
+function ImageEdition(){
+    return(
             <View>
-                <Text style={styles.username}>{mockUser.firstName} {mockUser.lastName}</Text>
+                <Text>Gallery</Text>
             </View>
+    );
+}
+
+function SettingPage( {navigation} ){
+    return (
+        <View>
+            <Avatar navigation={navigation}/>
+            <Username/>
             <View style={styles.switchRow}>
                 <Text style={{fontSize:16}}>Dark mode (TODO - switch here) </Text>
             </View>
+        </View>
+    );
+}
+export default function showSettings(){
+
+    return (
+        <NativeBaseProvider>
+                <Stack.Navigator>
+                    <Stack.Screen
+                        name='Back to settings'
+                        component={ SettingPage }
+                        options={{ headerShown: false }}
+
+                         />
+                    <Stack.Screen name="Gallery"
+                            component={ImageEdition}
+                             />
+                    <Stack.Screen name="Camera"
+                            component={TakingPictures}
+                             />
+                </Stack.Navigator>
         </NativeBaseProvider>
     );
 }
@@ -48,5 +114,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
     }
-})
+});
+
 
