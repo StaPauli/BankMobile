@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import {StyleSheet, TouchableOpacity, View} from "react-native";
 import { KeyboardAvoidingView } from "react-native";
-import { Button, Input, Text } from "react-native-elements";
+import {Button, Image, Input, Text} from "react-native-elements";
 import { StatusBar } from "expo-status-bar";
 import { auth } from '../firebase';
 import {MaterialCommunityIcons} from "@expo/vector-icons";
-
 
 const SingUpScreen = () => {
 
@@ -17,7 +16,12 @@ const SingUpScreen = () => {
     const [visible, setVisible] = useState(true)
     const [show2, setShow2] = useState(false)
     const [visible2, setVisible2] = useState(true)
+
+
+
     const signup = () => {
+
+        if(password===confrimpassword)
         auth
             .createUserWithEmailAndPassword(email, password)
             .then(authUser => {
@@ -26,13 +30,17 @@ const SingUpScreen = () => {
                 });
             })
             .catch((error) => alert(error.message));
+        else {
+            alert("The passwords are different")
+        }
     };
 
     return(
         <View style={styles.container}>
+            <Image source={require("../staticResources/atm-card2.png")} style={styles.image2}/>
             <StatusBar style="light" />
 
-            <Text h3 style={{marginBottom: 50}}>
+            <Text h3 style={{marginBottom: 30, marginTop: 40}}>
                 Create a account
             </Text>
 
@@ -139,6 +147,10 @@ const styles = StyleSheet.create({
         right: 5,
         top: 210,
     },
+    image2: {
+        width: 100,
+        height: 100,
+    }
 
 
 })
