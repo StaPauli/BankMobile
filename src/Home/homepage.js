@@ -1,18 +1,22 @@
+import React, { useState, useEffect } from "react";
 import { FlatList, StyleSheet, Text, View,Pressable,Alert } from 'react-native';
 import { NativeBaseProvider, Box, StatusBar, useColorMode } from 'native-base';
 import { mockUser } from '../mockUser';
-import showWireTransfer from '../WireTransfer/wireTransfer';
+import WireTransfer from '../WireTransfer/wireTransfer';
 import showSettings from '../Settings/settings';
-import showTransactionHistory from '../TransactionHistory/transactionHistory';
-import { NavigationContainer } from '@react-navigation/native';
+import TransactionHistory from '../TransactionHistory/transactionHistory';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { auth,db } from '../firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
-
+let email;
+let checkingToSend=0;
 const OverallGradient = ({calculatedOverall}) => {
     return (
         <View style={styles.overallContainer}>
@@ -28,27 +32,48 @@ const OverallGradient = ({calculatedOverall}) => {
     );
 }
 
-function History(){
-    return(
-        showTransactionHistory()
-    );
-}
-function HomeScreen( {navigation} ){
+
+function HomeScreen({navigation}){
+    let currentMail = this.email;
+    console.log(currentMail);
+    const[user,setUser] = useState([]);
+    useEffect(() => {
+        const getUser = () => {
+            db.collection('users')
+                                .where('email', '==', currentMail )
+                                .get()
+                                .then(result => {
+                                    setUser(result.docs.map( (doc) => ({ ...doc.data(), id: doc.id }) ));
+
+                                })
+        };
+        getUser();
+    }, []);
+    console.log(JSON.stringify(user));
     let tmpOverall = 0.00;
+    user.forEach(u => {
+        u.transactionHistory.forEach(item => {
+            tmpOverall += parseFloat(item.value);
+        });
+    })
 
-    mockUser.transactionHistory.forEach(item => {
-        tmpOverall += parseFloat(item.value);
-    });
     const calculatedOverall = tmpOverall;
-    mockUser.overall=calculatedOverall;
-
+    let listToSend = [];
+    this.checkingToSend = calculatedOverall;
+    let firstName;
+    let lastName;
     let transactionHistoryList=[];
-    if(mockUser.transactionHistory.length > 5){
-        transactionHistoryList=mockUser.transactionHistory.reverse().slice(0, 5);
-    }
-    else{
-        transactionHistoryList=mockUser.transactionHistory.reverse();
-    }
+    user.forEach(u => {
+        listToSend = u.transactionHistory;
+        firstName=u.firstName;
+        lastName=u.lastName;
+        if(u.transactionHistory.length > 5){
+            transactionHistoryList=u.transactionHistory.reverse().slice(0, 5);
+        }
+        else{
+            transactionHistoryList=u.transactionHistory.reverse();
+        }
+    });
 
     const renderItem = ({item}) => (
         <View style={styles.transactionHistoryRow}>
@@ -57,11 +82,21 @@ function HomeScreen( {navigation} ){
                 {item.value} zł</Text>
         </View>
      );
-
+    navigation.navigate('Wire transfer', {checking : calculatedOverall} );
+    navigation.navigate('Settings', {firstName: firstName, lastName: lastName });
     return(
             <View style={styles.homePageHeader}>
                 <View style={styles.nameContainer}>
-                    <Text style={styles.name}>Hi, {mockUser.firstName}</Text>
+                {
+                    user.map((u) => {
+                        return (
+                        <View>
+                            <Text style={styles.name}>Hi, {u.firstName}</Text>
+                        </View>
+                        );
+                    })
+                }
+
                 </View>
                 <OverallGradient calculatedOverall={calculatedOverall}/>
                 <View>
@@ -69,7 +104,7 @@ function HomeScreen( {navigation} ){
                         <Text style={{fontSize: 20}}>Your last transactions</Text>
                         <Pressable
                             onPress={() => {
-                              navigation.navigate('History', {screen : 'History'})
+                              navigation.navigate('History', {screen : 'History', params: {transactionList : listToSend } })
                             }}
                             style={({pressed}) => [
                               {
@@ -103,7 +138,7 @@ function WireTransferView(){
     );
 }
 
-function Home() {
+function Home({route}) {
   return (
     <Tab.Navigator>
         <Tab.Screen
@@ -115,15 +150,19 @@ function Home() {
                      <MaterialCommunityIcons name="home" color={color} size={size} />
                    ),
                  }}/>
+
+
          <Tab.Screen
              name='Wire transfer'
-             component={ WireTransferView }
+             component={ WireTransfer }
              options={{
                  tabBarLabel: 'Wire transfer',
                  tabBarIcon: ({ color, size }) => (
                    <MaterialCommunityIcons name="bank-transfer" color={color} size={size} />
                  ),
-               }}/>
+
+               }}
+               initialParams={{checking: this.checkingToSend}}/>
         <Tab.Screen
             name='Settings'
             component={SettingsView}
@@ -139,19 +178,18 @@ function Home() {
   );
 }
 
-export default function showHomePage () {
+export default function ShowHomePage ({route}) {
+   this.email = route.params.userEmail;
     return (
         <NativeBaseProvider>
-            <NavigationContainer independent={true}>
-                <Stack.Navigator>
-                    <Stack.Screen
-                        name='Homepage'
-                        component={ Home }
-                        options={{ headerShown: false }}
-                         />
-                    <Stack.Screen name="History" component={History} />
-                </Stack.Navigator>
-            </NavigationContainer>
+            <Stack.Navigator>
+                <Stack.Screen
+                    name='Homepage'
+                    component= {Home}
+                    options={{ headerShown: false }}
+                     />
+                <Stack.Screen name="History" component={TransactionHistory} />
+            </Stack.Navigator>
         </NativeBaseProvider>
       );
 }

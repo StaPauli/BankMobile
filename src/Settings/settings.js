@@ -8,8 +8,7 @@ import { mockUser } from '../mockUser';
 import CustomCamera from '../Camera/camera';
 
 LogBox.ignoreAllLogs(true);
-//TODO: switch to dark mode with native base
-//TODO: user image change
+
 const Stack = createNativeStackNavigator();
 
 const Avatar = ({navigation}) => {
@@ -19,10 +18,10 @@ const Avatar = ({navigation}) => {
             text: 'Cancel',
             style: 'cancel',
           },
-          {text: 'Pick from gallery', onPress: () =>  navigation.navigate('Gallery') },
           {text: 'Take a picture', onPress: () =>  navigation.navigate('Camera') }
         ])
     };
+
     return (
         <View>
             <TouchableOpacity
@@ -63,9 +62,6 @@ function SettingPage( {navigation} ){
         <View>
             <Avatar navigation={navigation}/>
             <Username/>
-            <View style={styles.switchRow}>
-                <Text style={{fontSize:16}}>Dark mode (TODO - switch here) </Text>
-            </View>
         </View>
     );
 }

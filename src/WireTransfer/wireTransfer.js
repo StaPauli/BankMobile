@@ -3,12 +3,13 @@ import { Text, View, Button, Alert,Pressable } from 'react-native';
 import { Input } from 'react-native-elements';
 import { mockUser } from '../mockUser';
 
-export default function showWireTransfer () {
+export default function WireTransfer ({route}) {
     const [recipientName, setRecipientName] = useState('');
     const [accountNumber, setAccountNumber] = useState('');
     const [title, setTitle] = useState('');
     const [checkout, setCheckout] = useState('');
-
+    console.log(JSON.stringify(route));
+    console.log(JSON.stringify(route));
     return (
         <View style={{padding:5, paddingTop: 10}}>
             <Input
@@ -33,7 +34,7 @@ export default function showWireTransfer () {
             />
             <Input
                 label='Checking account'
-                value={mockUser.overall.toString()+' zł'}
+                value={parseFloat(route.params.checking).toFixed(2).toString()+' zł'}
                 editable ={false}
             />
             <Input

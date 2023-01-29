@@ -1,8 +1,8 @@
 import Images from './staticResources/index';
 
 export const mockUser = {
-    firstName : 'Jan',
-    lastName : 'Kowalski',
+    firstName : 'Paulina',
+    lastName : 'Starz',
     transactionHistory : [
         { key: 'transaction1', value : '121.99', type : 'in' },
         { key: 'transaction2', value : '-122.99', type : 'out' },

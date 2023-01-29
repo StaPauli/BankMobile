@@ -5,6 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import { auth } from '../firebase';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
+
 const LoginScreen = ({ navigation }) => {
 
     const [email, setEmail] = useState('')
@@ -14,7 +15,7 @@ const LoginScreen = ({ navigation }) => {
     useEffect(() => {
        const unsubscribe = auth.onAuthStateChanged((authUser) => {
             if(authUser) {
-                navigation.replace("Home");
+                console.log('unsubscribe');
             }
         });
 
@@ -24,6 +25,7 @@ const LoginScreen = ({ navigation }) => {
     const signIn = () => {
         auth
             .signInWithEmailAndPassword(email, password)
+            .then(() => { navigation.navigate("Home", {userEmail: email })})
             .catch((error) => alert(error));
 
     };
