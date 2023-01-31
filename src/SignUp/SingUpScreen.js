@@ -41,7 +41,7 @@ const SingUpScreen = () => {
             <StatusBar style="light" />
 
             <Text h3 style={{marginBottom: 30, marginTop: 40}}>
-                Create a account
+                Create an account
             </Text>
 
             <View style={styles.inputContainer}>

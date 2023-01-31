@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet, Text, View, TouchableOpacity ,Alert,FlatList } from 'react-native';
 import { mockUser } from '../mockUser';
 
-export default function showTransactionHistory(){
+export default function TransactionHistory({route}){
     const renderItem = ({item}) => (
         <View style={styles.transactionHistoryRow}>
             <Text >{item.key}</Text>
@@ -9,7 +9,8 @@ export default function showTransactionHistory(){
                 {item.value} zł</Text>
         </View>
      );
-     let transactionHistoryList = mockUser.transactionHistory;
+     console.log(JSON.stringify(route));
+     let transactionHistoryList = route.params.params.transactionList;
 
     return(
         <View>
