@@ -11,6 +11,10 @@ LogBox.ignoreAllLogs(true);
 
 const Stack = createNativeStackNavigator();
 
+let receivedFirstName;
+let receivedLastName;
+let receivedImage;
+
 const Avatar = ({navigation}) => {
     const createAlert = () =>{
         Alert.alert('Edit image', 'Change your profile picture', [
@@ -21,7 +25,6 @@ const Avatar = ({navigation}) => {
           {text: 'Take a picture', onPress: () =>  navigation.navigate('Camera') }
         ])
     };
-
     return (
         <View>
             <TouchableOpacity
@@ -35,13 +38,6 @@ const Avatar = ({navigation}) => {
     );
 }
 
-const Username = () => {
-    return (
-        <View>
-            <Text style={styles.username}>{mockUser.firstName} {mockUser.lastName}</Text>
-        </View>
-    );
-}
 
 function TakingPictures(){
     return(
@@ -49,24 +45,18 @@ function TakingPictures(){
     );
 }
 
-function ImageEdition(){
-    return(
-            <View>
-                <Text>Gallery</Text>
-            </View>
-    );
-}
-
 function SettingPage( {navigation} ){
     return (
         <View>
             <Avatar navigation={navigation}/>
-            <Username/>
         </View>
     );
 }
-export default function showSettings(){
 
+export default function Settings({route}){
+    this.receivedFirstName=route.params.firstName;
+    this.receivedLastName=route.params.lastName;
+    this.receivedImage=route.params.image;
     return (
         <NativeBaseProvider>
                 <Stack.Navigator>
@@ -74,11 +64,7 @@ export default function showSettings(){
                         name='Back to settings'
                         component={ SettingPage }
                         options={{ headerShown: false }}
-
                          />
-                    <Stack.Screen name="Gallery"
-                            component={ImageEdition}
-                             />
                     <Stack.Screen name="Camera"
                             component={TakingPictures}
                              />

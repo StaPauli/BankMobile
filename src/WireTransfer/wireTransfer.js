@@ -3,13 +3,13 @@ import { Text, View, Button, Alert,Pressable } from 'react-native';
 import { Input } from 'react-native-elements';
 import { mockUser } from '../mockUser';
 
-export default function WireTransfer ({route}) {
+export default function WireTransfer ({calculatedOverall}) {
     const [recipientName, setRecipientName] = useState('');
     const [accountNumber, setAccountNumber] = useState('');
     const [title, setTitle] = useState('');
     const [checkout, setCheckout] = useState('');
-    console.log(JSON.stringify(route));
-    console.log(JSON.stringify(route));
+    const [checkoutAfter, setCheckoutAfter] = useState('');
+
     return (
         <View style={{padding:5, paddingTop: 10}}>
             <Input
@@ -33,11 +33,6 @@ export default function WireTransfer ({route}) {
               onChangeText={value => setTitle(value)}
             />
             <Input
-                label='Checking account'
-                value={parseFloat(route.params.checking).toFixed(2).toString()+' zł'}
-                editable ={false}
-            />
-            <Input
               label='Checkout'
               placeholder='0.00'
               value={checkout}
@@ -48,7 +43,8 @@ export default function WireTransfer ({route}) {
                 style={{borderRadius: 20, width: '50%'}}
                 title='Accept'
                 onPress={() => { //here HTTP POST to DB, HTTP PUT to User overall
-                    Alert.alert('Wire transfer accepted (tmp alert)');
+
+                    Alert.alert('Wire transfer done');
                     setRecipientName('');
                     setAccountNumber('');
                     setTitle('');

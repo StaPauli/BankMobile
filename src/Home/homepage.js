@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, Text, View,Pressable,Alert } from 'react-native';
 import { NativeBaseProvider, Box, StatusBar, useColorMode } from 'native-base';
 import { mockUser } from '../mockUser';
 import WireTransfer from '../WireTransfer/wireTransfer';
-import showSettings from '../Settings/settings';
+import Settings from '../Settings/settings';
 import TransactionHistory from '../TransactionHistory/transactionHistory';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -17,6 +17,10 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 let email;
 let checkingToSend=0;
+let firstName;
+let lastName;
+let image;
+
 const OverallGradient = ({calculatedOverall}) => {
     return (
         <View style={styles.overallContainer}>
@@ -33,47 +37,51 @@ const OverallGradient = ({calculatedOverall}) => {
 }
 
 
-function HomeScreen({navigation}){
-    let currentMail = this.email;
-    console.log(currentMail);
+function HomeScreen({navigation,route}){
+
+    let currentEmail = route.params.userEmail;
     const[user,setUser] = useState([]);
+    //database GET:
     useEffect(() => {
         const getUser = () => {
             db.collection('users')
-                                .where('email', '==', currentMail )
-                                .get()
-                                .then(result => {
-                                    setUser(result.docs.map( (doc) => ({ ...doc.data(), id: doc.id }) ));
-
-                                })
+                .where('email', '==', currentEmail )
+                .get()
+                .then(result => {
+                    setUser(result.docs.map( (doc) => ({ ...doc.data(), id: doc.id }) ));
+                }).catch(error => {
+                    console.log(error)
+                })
         };
         getUser();
     }, []);
-    console.log(JSON.stringify(user));
+
     let tmpOverall = 0.00;
+
+    let listToSend = [];
+
+    let transactionHistoryList=[];
+    //summary of transactions
     user.forEach(u => {
         u.transactionHistory.forEach(item => {
             tmpOverall += parseFloat(item.value);
         });
     })
+        const calculatedOverall = tmpOverall;
+            this.checkingToSend = calculatedOverall;
+        user.forEach(u => {
+                listToSend = u.transactionHistory;
+                this.firstName=u.firstName;
+                this.lastName=u.lastName;
+                this.image=u.image.source;
+                if(u.transactionHistory.length > 5){
+                    transactionHistoryList=u.transactionHistory.reverse().slice(0, 5);
+                }
+                else{
+                    transactionHistoryList=u.transactionHistory.reverse();
+                }
+            });
 
-    const calculatedOverall = tmpOverall;
-    let listToSend = [];
-    this.checkingToSend = calculatedOverall;
-    let firstName;
-    let lastName;
-    let transactionHistoryList=[];
-    user.forEach(u => {
-        listToSend = u.transactionHistory;
-        firstName=u.firstName;
-        lastName=u.lastName;
-        if(u.transactionHistory.length > 5){
-            transactionHistoryList=u.transactionHistory.reverse().slice(0, 5);
-        }
-        else{
-            transactionHistoryList=u.transactionHistory.reverse();
-        }
-    });
 
     const renderItem = ({item}) => (
         <View style={styles.transactionHistoryRow}>
@@ -82,17 +90,16 @@ function HomeScreen({navigation}){
                 {item.value} zł</Text>
         </View>
      );
-    navigation.navigate('Wire transfer', {checking : calculatedOverall} );
-    navigation.navigate('Settings', {firstName: firstName, lastName: lastName });
+
     return(
             <View style={styles.homePageHeader}>
                 <View style={styles.nameContainer}>
                 {
                     user.map((u) => {
                         return (
-                        <View>
-                            <Text style={styles.name}>Hi, {u.firstName}</Text>
-                        </View>
+                            <View>
+                                <Text style={styles.name}>Hi, {u.firstName}</Text>
+                            </View>
                         );
                     })
                 }
@@ -126,19 +133,9 @@ function HomeScreen({navigation}){
         );
 }
 
-function SettingsView(){
-    return (
-        showSettings()
-    );
-}
 
-function WireTransferView(){
-    return (
-        showWireTransfer()
-    );
-}
+function Home({navigation,route}) {
 
-function Home({route}) {
   return (
     <Tab.Navigator>
         <Tab.Screen
@@ -149,8 +146,8 @@ function Home({route}) {
                    tabBarIcon: ({ color, size }) => (
                      <MaterialCommunityIcons name="home" color={color} size={size} />
                    ),
-                 }}/>
-
+                 }}
+             initialParams={{userEmail: route.params.userEmail}}/>
 
          <Tab.Screen
              name='Wire transfer'
@@ -160,20 +157,19 @@ function Home({route}) {
                  tabBarIcon: ({ color, size }) => (
                    <MaterialCommunityIcons name="bank-transfer" color={color} size={size} />
                  ),
-
                }}
-               initialParams={{checking: this.checkingToSend}}/>
+           initialParams={{'checking': this.checkingToSend}}/>
         <Tab.Screen
             name='Settings'
-            component={SettingsView}
+            component={Settings}
             options={{
                 unmountOnBlur: true,
                 tabBarLabel: 'Settings',
                 tabBarIcon: ({ color, size }) => (
                   <MaterialCommunityIcons name="cog" color={color} size={size} />
                 ),
-
-              }}/>
+              }}
+           initialParams={{'firstName': this.firstName, 'lastName': this.lastName }}/>
     </Tab.Navigator>
   );
 }
@@ -187,6 +183,7 @@ export default function ShowHomePage ({route}) {
                     name='Homepage'
                     component= {Home}
                     options={{ headerShown: false }}
+                     initialParams={{userEmail : this.email}}
                      />
                 <Stack.Screen name="History" component={TransactionHistory} />
             </Stack.Navigator>
