@@ -3,12 +3,13 @@ import {StyleSheet, TouchableOpacity, View} from "react-native";
 import { KeyboardAvoidingView } from "react-native";
 import { Button, Input, Text } from "react-native-elements";
 import { StatusBar } from "expo-status-bar";
-import { auth } from '../firebase';
-import {MaterialCommunityIcons} from "@expo/vector-icons";
+import { db, auth } from '../firebase';
+import { collection, getDocs, addDoc } from 'firebase/firestore';
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Images from '../staticResources/index';
 
 
-const SingUpScreen = () => {
-
+const SingUpScreen = ({navigation}) => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -17,6 +18,18 @@ const SingUpScreen = () => {
     const [visible, setVisible] = useState(true)
     const [show2, setShow2] = useState(false)
     const [visible2, setVisible2] = useState(true)
+
+    const [newFirstName, setNewFirstName] = useState("");
+    const [newLastName, setNewLastName] = useState("");
+    const [newEmail, setNewEmail] = useState("");
+    const [newAccountNumber, setNewAccountNumber] = useState("");
+    const [image, setImage] = useState({
+        isDefault: true,
+        source: Images.defaultImage
+    });
+    const [overall, setOverall] = useState(0);
+
+    const usersCollectionRef = collection(db,'users');
     const signup = () => {
         auth
             .createUserWithEmailAndPassword(email, password)
@@ -24,6 +37,23 @@ const SingUpScreen = () => {
                 let promise = authUser.user.updateProfile({
                     displayName: name,
                 });
+                addDoc(usersCollectionRef, {
+                    firstName : name.split(' ')[0],
+                    lastName : name.split(' ')[1],
+                    email : email,
+                    accountNumber : String((Math.random() * (2000000 - 1) + 1).toFixed(0)),
+                    image : {
+                                    isDefault: true,
+                                    source: 'require(\'./default_avatar.jpg\')'
+                                },
+                    overall : 0,
+                    transactionHistory : []
+                }).then(result2 => {
+                    navigation.navigate("Home", {userEmail: email });
+                })
+                .catch((error) => alert(error.message));
+//                              })
+//                              .catch((error) => alert(error.message));
             })
             .catch((error) => alert(error.message));
     };

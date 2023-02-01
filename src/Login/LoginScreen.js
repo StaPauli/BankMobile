@@ -12,22 +12,16 @@ const LoginScreen = ({ navigation }) => {
     const [password, setPassword] = useState('')
     const [show, setShow] = useState(false)
     const [visible, setVisible] = useState(true)
-    useEffect(() => {
-       const unsubscribe = auth.onAuthStateChanged((authUser) => {
-            if(authUser) {
-                console.log('unsubscribe');
-            }
-        });
-
-       return unsubscribe;
-    }, []);
 
     const signIn = () => {
         auth
             .signInWithEmailAndPassword(email, password)
-            .then(() => { navigation.navigate("Home", {userEmail: email })})
+            .then(() => {
+                console.log(JSON.stringify(navigation))
+                console.log(email);
+                navigation.navigate("Home",{ userEmail: email } )
+            })
             .catch((error) => alert(error));
-
     };
 
     return(

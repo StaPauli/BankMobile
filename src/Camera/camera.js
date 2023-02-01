@@ -40,6 +40,7 @@ const CustomCamera = () => {
         alert('Picture saved!');
         mockUser.image.source = {uri: image};
         mockUser.image.isDefault=false;
+        console.log(mockUser.image.source);
         setImage(null);
         console.log('saved successfully');
       } catch (error) {

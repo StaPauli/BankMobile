@@ -1,6 +1,7 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
+import functions from '@react-native-firebase/functions';
 
 const firebaseConfig = {
     apiKey: "AIzaSyA2WlQAS1NbRQLtm2bVavaA0FVIj0c9whI",
@@ -21,6 +22,14 @@ if (firebase.apps.length === 0) {
 
 const db = app.firestore();
 const auth = firebase.auth();
+
+const createUserOnRegistration = () => {
+    const [email, setEmail] = useState('');
+    const [overall, setOverall] = useState('');
+    functions.auth.user().onCreate((user) => {
+        console.log(JSON.stringify(user));
+    });
+}
 
 export  { db, auth };
 
